@@ -1,10 +1,8 @@
-import express from "express";
-import bodyParser from "body-parser";
-import axios from "axios";
+const express = require("express");
+const bodyParser = require("body-parser");
+const axios = require("axios");
 const app = express();
 const port = 3000;
-import * as dotenv from "dotenv";
-dotenv.config();
 
 app.use(bodyParser.json());
 
@@ -107,7 +105,6 @@ app.post("/on-new-message", async (req, res) => {
   console.log('   - fromMe:', req.body.fromMe);
   console.log('   - Chat existente:', chats[req.body.phone] ? 'SIM' : 'NÃO');
 
-  // Verificar se é mensagem válida
   if (!req.body.fromMe && req.body.text && req.body.text.message) {
     console.log('✅ Mensagem válida recebida');
     await onNewMessage(req.body);
@@ -115,7 +112,6 @@ app.post("/on-new-message", async (req, res) => {
     console.log('⚠️ Mensagem ignorada (fromMe ou sem texto)');
   }
 
-  // Verificar comando !gpt
   if (!req.body.fromMe && req.body.text && req.body.text.message === "!gpt") {
     console.log('🎯 Comando !gpt detectado');
     chats[req.body.phone] = {
