@@ -27,6 +27,14 @@ const replyMessage = async (phone, message) => {
 };
 
 const appendChat = (phone, message) => {
+  // Garantir que o chat existe
+  if (!chats[phone]) {
+    chats[phone] = {
+      blocked: false,
+      messages: []
+    };
+  }
+  
   chats[phone].messages.push(message.replace(/(\r\n|\n|\r)/gm, ""));
   if (chats[phone].messages.length > 7) {
     chats[phone].messages.shift();
@@ -37,7 +45,15 @@ const appendChat = (phone, message) => {
 const onNewMessage = async (message) => {
   console.log(`🤖 Processando mensagem de ${message.phone}: ${message.text.message}`);
   
-  if (chats[message.phone] && chats[message.phone].blocked) {
+  // INICIALIZAR O CHAT SE NÃO EXISTIR - CORREÇÃO CRÍTICA
+  if (!chats[message.phone]) {
+    chats[message.phone] = {
+      blocked: false,
+      messages: []
+    };
+  }
+  
+  if (chats[message.phone].blocked) {
     console.log('⏳ Chat bloqueado - enviando mensagem de aguarde');
     return await replyMessage(message.phone, "Um momento por favor");
   }
@@ -105,13 +121,7 @@ app.post("/on-new-message", async (req, res) => {
   console.log('   - fromMe:', req.body.fromMe);
   console.log('   - Chat existente:', chats[req.body.phone] ? 'SIM' : 'NÃO');
 
-  if (!req.body.fromMe && req.body.text && req.body.text.message) {
-    console.log('✅ Mensagem válida recebida');
-    await onNewMessage(req.body);
-  } else {
-    console.log('⚠️ Mensagem ignorada (fromMe ou sem texto)');
-  }
-
+  // CORREÇÃO: Inicializar chat se for comando !gpt
   if (!req.body.fromMe && req.body.text && req.body.text.message === "!gpt") {
     console.log('🎯 Comando !gpt detectado');
     chats[req.body.phone] = {
@@ -120,6 +130,14 @@ app.post("/on-new-message", async (req, res) => {
     };
     await replyMessage(req.body.phone, initialMessage);
     await appendChat(req.body.phone, ` OPENAI: ${initialMessage}`);
+  }
+  
+  // Processar mensagens normais
+  if (!req.body.fromMe && req.body.text && req.body.text.message) {
+    console.log('✅ Mensagem válida recebida');
+    await onNewMessage(req.body);
+  } else {
+    console.log('⚠️ Mensagem ignorada (fromMe ou sem texto)');
   }
 
   console.log('✅ Webhook processado com sucesso');
