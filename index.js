@@ -7,8 +7,8 @@ const port = 3000;
 app.use(bodyParser.json());
 
 const initialMessage = "Bem-vindo ao Chat GPT, como posso te ajudar?";
-const secretKey = process.env.OPEN_AI_API_KEY;
-const zapiUrl = `https://api.z-api.io/instances/${process.env.Z_API_INSTANCE_ID}/token/${process.env.Z_API_INSTANCE_TOKEN}/send-text`;
+const secretKey = process.env.OPENAI_API_KEY;
+const zapiUrl = `https://api.z-api.io/instances/${process.env.ZAPI_INSTANCE_ID}/token/${process.env.ZAPI_TOKEN}/send-text`;
 
 const chats = {};
 
