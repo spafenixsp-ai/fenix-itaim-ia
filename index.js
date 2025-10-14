@@ -10,6 +10,11 @@ const initialMessage = "Bem-vindo ao Chat GPT, como posso te ajudar?";
 const secretKey = process.env.OPENAI_API_KEY;
 const zapiUrl = `https://api.z-api.io/instances/${process.env.ZAPI_INSTANCE_ID}/token/${process.env.ZAPI_TOKEN}/send-text`;
 
+// DEBUG DA OPENAI KEY
+console.log('🔑 OpenAI Key existe?', process.env.OPENAI_API_KEY ? 'SIM' : 'NÃO');
+console.log('🔑 ZAPI Token existe?', process.env.ZAPI_TOKEN ? 'SIM' : 'NÃO');
+console.log('🔑 ZAPI Instance ID existe?', process.env.ZAPI_INSTANCE_ID ? 'SIM' : 'NÃO');
+
 const chats = {};
 
 const replyMessage = async (phone, message) => {
@@ -44,6 +49,9 @@ const appendChat = (phone, message) => {
 
 const onNewMessage = async (message) => {
   console.log(`🤖 Processando mensagem de ${message.phone}: ${message.text.message}`);
+  
+  // DEBUG DA KEY ANTES DE USAR
+  console.log('🔑 SecretKey no onNewMessage:', secretKey ? 'EXISTE' : 'NÃO EXISTE');
   
   // INICIALIZAR O CHAT SE NÃO EXISTIR - CORREÇÃO CRÍTICA
   if (!chats[message.phone]) {
