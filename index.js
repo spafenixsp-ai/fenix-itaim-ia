@@ -108,6 +108,19 @@ const onNewMessage = async (message) => {
 };
 
 app.post("/on-new-message", async (req, res) => {
+  // VERIFICAR CLIENT-TOKEN
+  const clientToken = req.headers['client-token'];
+  const validToken = process.env.ZAPI_CLIENT_TOKEN;
+  
+  console.log('🔐 Verificando Client-Token:', clientToken ? 'Recebido' : 'Não recebido');
+  
+  if (!clientToken || clientToken !== validToken) {
+    console.log('❌ Client-Token inválido ou ausente');
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+  
+  console.log('✅ Client-Token válido!');
+  
   console.log('🔔 WEBHOOK CHAMADO - Body completo:', JSON.stringify(req.body, null, 2));
   
   if (!req.body) {
